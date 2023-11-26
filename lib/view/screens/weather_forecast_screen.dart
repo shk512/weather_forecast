@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_forecast/model/city_model.dart';
 import 'package:weather_forecast/model/forecast_model.dart';
 import 'package:weather_forecast/view/widgets/background.dart';
 import 'package:weather_forecast/view_model/forecast_view_model.dart';
@@ -16,28 +17,27 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Weather",
+          "Weather Forecast",
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.blueAccent,
             fontWeight: FontWeight.w900,
-            fontSize: 30,
           ),
         ),
       ),
-      body: FutureBuilder<ForecastModel>(
+      body: FutureBuilder<ForecastModel?>(
           future: ForecastViewModel().getForecast(),
-          builder: (context, AsyncSnapshot response) {
-            if (response == ConnectionState.waiting) {
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            if (!response.hasData) {
+            if (!snapshot.hasData) {
               return const Center(
                 child: Text("No Data Found"),
               );
             }
-            if (response.hasError) {
+            if (snapshot.hasError || snapshot.data == null) {
               return const Center(
                 child: Text(
                   "Something Error\nTry Again Later",
@@ -46,9 +46,23 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
               );
             } else {
               return Background(
-                weather: response.data.weather.weather,
-                child: Column(
-                  children: [],
+                weather: snapshot.data.weather.weather,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${CityModel.city}, ${CityModel.country}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }

@@ -19,11 +19,11 @@ class ForecastModel {
 
   factory ForecastModel.fromJson(Map<String, dynamic> mapData) {
     return ForecastModel(
-      weather: WeatherModel.fromJson(mapData["weather"]),
+      weather: WeatherModel.fromJson(mapData["weather"][0]),
       temperature: TempModel.fromJson(mapData["main"]),
       cloudiness: mapData["clouds"]["all"],
       visibility: mapData["visibility"],
-      date: mapData[""],
+      date: DateTime.now().toString(),
       isDay: mapData["sys"]["pod"] == "n" ? false : true,
     );
   }

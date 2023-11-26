@@ -32,7 +32,7 @@ class Background extends StatelessWidget {
           width: MediaQuery.sizeOf(context).width,
           borderRadius: BorderRadius.circular(0),
           padding: const EdgeInsets.all(0),
-          blur: 4,
+          blur: 10,
           child: child,
         ),
       ],

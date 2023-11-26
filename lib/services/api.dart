@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather_forecast/utils/constants.dart';
 
@@ -14,10 +15,13 @@ class ApiServices {
           jsonDecode(response.body)["cod"] == "200") {
         return jsonDecode(response.body);
       } else {
+        Get.snackbar(jsonDecode(response.body)["message"],
+            jsonDecode(response.body)["message"]);
         return null;
       }
     } catch (e) {
-      throw e;
+      Get.snackbar("Error", e.toString());
+      return null;
     }
   }
 }
