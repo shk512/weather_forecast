@@ -1,6 +1,8 @@
 import 'package:weather_forecast/utils/constants.dart';
 
 class AppUtils {
+  static String lastUpdateTime = "";
+
   static String getImagePathByWeatherType(String weather) {
     String path;
     if (weather == 'Rain') {

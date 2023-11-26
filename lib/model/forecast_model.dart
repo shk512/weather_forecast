@@ -23,7 +23,7 @@ class ForecastModel {
       temperature: TempModel.fromJson(mapData["main"]),
       cloudiness: mapData["clouds"]["all"],
       visibility: mapData["visibility"],
-      date: DateTime.now().toString(),
+      date: mapData["dt_txt"],
       isDay: mapData["sys"]["pod"] == "n" ? false : true,
     );
   }

@@ -14,11 +14,11 @@ class TempModel {
 
   factory TempModel.fromJson(Map<String, dynamic> mapData) {
     return TempModel(
-      temp: mapData["temp"],
-      feelsLike: mapData["feels_like"],
+      temp: mapData["temp"] - 273.15,
+      feelsLike: mapData["feels_like"] - 273.15,
       humidity: mapData["humidity"],
-      maxTemp: mapData["temp_max"],
-      minTemp: mapData["temp_min"],
+      maxTemp: mapData["temp_max"] - 273.15,
+      minTemp: mapData["temp_min"] - 273.15,
     );
   }
 }

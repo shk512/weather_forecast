@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:weather_forecast/model/city_model.dart';
+import 'package:provider/provider.dart';
 import 'package:weather_forecast/model/forecast_model.dart';
+import 'package:weather_forecast/state_management/language_handler.dart';
+import 'package:weather_forecast/utils/constants.dart';
 import 'package:weather_forecast/view/widgets/background.dart';
 import 'package:weather_forecast/view_model/forecast_view_model.dart';
 
@@ -14,17 +17,37 @@ class WeatherForecastScreen extends StatefulWidget {
 class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Weather Forecast",
-          style: TextStyle(
-            color: Colors.blueAccent,
-            fontWeight: FontWeight.w900,
+    return Consumer<LanguageHandler>(builder: (context, language, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            languageMap[language.languageCode]!["weatherForecast"] ?? "",
+            style: const TextStyle(
+              color: Colors.blueAccent,
+              fontWeight: FontWeight.w900,
+            ),
           ),
+          actions: [
+            DropdownButton(
+                hint: const Icon(CupertinoIcons.globe),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'en',
+                    child: Text("English"),
+                  ),
+                  DropdownMenuItem(
+                    value: 'ar',
+                    child: Text("عربي"),
+                  ),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    language.setLanguageCode(val);
+                  }
+                }),
+          ],
         ),
-      ),
-      body: FutureBuilder<ForecastModel?>(
+        body: FutureBuilder<List<ForecastModel>>(
           future: ForecastViewModel().getForecast(),
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,20 +76,117 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      FutureBuilder(
+                          future: ForecastViewModel().getLocation(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(
+                                snapshot.data!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          }),
+                      FutureBuilder<String>(
+                          future: ForecastViewModel().getLastUpdateTime(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(
+                                snapshot.data!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          }),
+                      const SizedBox(height: 10),
                       Text(
-                        "${CityModel.city}, ${CityModel.country}",
+                        "${languageMap[language.languageCode]!["minTemp"]}: ${snapshot.data![0].temperature.minTemp.toStringAsFixed(2)} \u2103",
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      Text(
+                        "${languageMap[language.languageCode]!["maxTemp"]}: ${snapshot.data![0].temperature.maxTemp.toStringAsFixed(2)} \u2103",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "${languageMap[language.languageCode]!["feelsLike"]}: ${snapshot.data![0].temperature.feelsLike.toStringAsFixed(2)} \u2103",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        snapshot.data![0].weather.weather,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        snapshot.data![0].weather.description,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ListView.builder(
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              elevation: 2,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(snapshot.data[index].date),
+                                  Text(
+                                    "Min Temp: ${snapshot.data![index].temperature.minTemp.toStringAsFixed(2)} \u2103",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Max Temp: ${snapshot.data![index].temperature.maxTemp.toStringAsFixed(2)} \u2103",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Feels like: ${snapshot.data![index].temperature.feelsLike.toStringAsFixed(2)} \u2103",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          })
                     ],
                   ),
                 ),
               );
             }
-          }),
-    );
+          },
+        ),
+      );
+    });
   }
 }
