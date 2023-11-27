@@ -44,7 +44,7 @@ dependencies:
   get: ^4.6.6
   permission_handler:
   shared_preferences: ^2.2.2
-
+  easy_refresh: ^3.3.2+4
 
 dev_dependencies:
   flutter_test:

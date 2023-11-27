@@ -10,6 +10,7 @@ void main() async {
   if (!await Permission.location.isGranted) {
     await Permission.location.request();
   }
+  Provider.debugCheckInvalidValueType = null;
   runApp(const MyApp());
 }
 
